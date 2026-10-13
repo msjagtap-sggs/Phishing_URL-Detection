@@ -1,0 +1,41 @@
+{
+  "model_name": "Gradient Boosting",
+  "feature_columns": [
+    "url_length",
+    "hostname_length",
+    "path_length",
+    "query_length",
+    "longest_path_token_length",
+    "num_dots",
+    "num_subdomains",
+    "num_hyphens_url",
+    "num_hyphens_hostname",
+    "num_digits_url",
+    "num_digits_hostname",
+    "num_special_chars",
+    "num_params",
+    "path_depth",
+    "digit_ratio",
+    "letter_ratio",
+    "special_char_ratio",
+    "has_ip_address",
+    "has_https",
+    "has_at_symbol",
+    "has_shortener",
+    "has_port",
+    "has_punycode",
+    "has_double_slash_in_path",
+    "has_suspicious_tld",
+    "suspicious_keyword_count",
+    "url_entropy",
+    "hostname_entropy",
+    "brand_edit_distance",
+    "is_brand_lookalike"
+  ],
+  "random_seed": 42,
+  "test_size": 0.2,
+  "sklearn_pipeline_steps": [
+    "clf"
+  ],
+  "trained_on_rows": 189609
+}

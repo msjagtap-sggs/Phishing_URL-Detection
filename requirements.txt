@@ -1,0 +1,28 @@
+# Core data / ML
+pandas>=2.0,<3.0
+numpy>=1.24,<3.0
+scikit-learn>=1.3,<1.6
+joblib>=1.3,<2.0
+
+# Explainable AI
+# (shap 0.46+ is required for reliable NumPy 2.x support; if you are on
+# an older numpy 1.x environment, shap 0.44+ also works.)
+shap>=0.46,<1.0
+
+# Plotting
+matplotlib>=3.7,<3.9
+
+# Web application
+Flask>=3.0,<3.2
+
+# VirusTotal threat-intel check
+requests>=2.31,<3.0
+
+# Testing
+pytest>=7.4,<9.0
+
+# Notebook (optional, for notebooks/model_analysis.ipynb)
+jupyter>=1.0,<2.0
+
+# Dataset download helper (optional; manual CSV also supported)
+ucimlrepo>=0.0.7

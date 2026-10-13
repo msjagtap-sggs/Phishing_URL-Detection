@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>URLGuard — Explainable Phishing URL Detection</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="scanline" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <button class="brand" data-nav="home">
+      <span class="brand__mark">◆</span>
+      <span class="brand__name">URLGuard</span>
+    </button>
+    <nav class="nav">
+      <button class="nav__link is-active" data-nav="home">Home</button>
+      <button class="nav__link" data-nav="analyze">Analyze</button>
+      <button class="nav__link" data-nav="performance">Model Performance</button>
+      <button class="nav__link" data-nav="about">About</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================= HOME ============================= -->
+  <section id="home" class="view is-active">
+    <div class="hero">
+      <div class="hero__content">
+        <p class="hero__kicker">Explainable ML · Risk Assessment</p>
+        <h1 class="hero__title">See what a URL is really<br>doing before you click it.</h1>
+        <p class="hero__lede">
+          URLGuard extracts lexical signals from a web address, runs them through
+          a trained classifier, and shows you exactly which signals drove the
+          verdict — no black box, no hard-coded rules.
+        </p>
+        <div class="hero__actions">
+          <button class="btn btn--primary" data-nav="analyze">Analyze a URL</button>
+          <button class="btn btn--ghost" data-nav="about">How it works</button>
+        </div>
+      </div>
+
+      <div class="hero__stats" id="hero-stats">
+        <div class="stat">
+          <span class="stat__value">—</span>
+          <span class="stat__label">test accuracy</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value">—</span>
+          <span class="stat__label">phishing precision</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value">—</span>
+          <span class="stat__label">phishing recall</span>
+        </div>
+        <div class="stat">
+          <span class="stat__value">235,362</span>
+          <span class="stat__label">URLs in training data</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="workflow">
+      <h2 class="section__title">How a prediction is made</h2>
+      <ol class="workflow__steps">
+        <li><span class="workflow__num">1</span><div><strong>URL validation</strong><p>Input is checked and normalised — no scheme, whitespace, or malformed text passes through.</p></div></li>
+        <li><span class="workflow__num">2</span><div><strong>Feature extraction</strong><p>28 lexical features are computed directly from the URL string: length, structure, entropy, keywords, and more.</p></div></li>
+        <li><span class="workflow__num">3</span><div><strong>Model prediction</strong><p>A trained Gradient Boosting classifier outputs a phishing probability.</p></div></li>
+        <li><span class="workflow__num">4</span><div><strong>Risk + explanation</strong><p>The probability maps to a risk level, and SHAP explains exactly which features drove it.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============================= ANALYZE ============================= -->
+  <section id="analyze" class="view">
+    <div class="scanner">
+      <h2 class="section__title">Analyze a URL</h2>
+      <p class="section__sub">Paste any web address. Nothing is visited or fetched — only the text of the URL is analysed.</p>
+
+      <form id="analyze-form" class="scanner__form">
+        <input
+          id="url-input"
+          class="scanner__input"
+          type="text"
+          placeholder="https://example.com/login"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button type="submit" class="btn btn--primary scanner__btn" id="analyze-btn">Analyze URL</button>
+      </form>
+      <p class="scanner__hint">Try a real link, or experiment with something suspicious-looking to see how the risk score changes.</p>
+
+      <div id="scan-progress" class="scan-progress" hidden>
+        <div class="scan-progress__bar"></div>
+        <span>Extracting features and scoring…</span>
+      </div>
+
+      <div id="analyze-error" class="alert alert--error" hidden></div>
+    </div>
+
+    <!-- ===================== RESULT ===================== -->
+    <div id="result" class="result" hidden>
+
+      <div class="verdict-row">
+        <div class="verdict-card" id="verdict-card">
+          <span class="verdict-card__label">Prediction</span>
+          <span class="verdict-card__value" id="verdict-label">—</span>
+          <span class="verdict-card__url" id="verdict-url">—</span>
+        </div>
+
+        <div class="risk-card" id="risk-card">
+          <span class="risk-card__label">Risk assessment</span>
+          <span class="risk-card__badge" id="risk-badge">—</span>
+          <div class="gauge" id="gauge">
+            <svg viewBox="0 0 120 70" class="gauge__svg">
+              <path d="M10,65 A55,55 0 0 1 110,65" class="gauge__track" />
+              <path d="M10,65 A55,55 0 0 1 110,65" class="gauge__fill" id="gauge-fill" />
+            </svg>
+            <div class="gauge__reading">
+              <span id="gauge-value">—</span>
+              <span class="gauge__caption">phishing probability</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel__title">Why the model decided this</h3>
+        <p class="panel__sub" id="explanation-method">—</p>
+        <ul class="reasons" id="reasons-list"></ul>
+
+        <h4 class="panel__subtitle">Feature contributions</h4>
+        <p class="panel__sub">Each bar shows how much a feature pushed the prediction toward Phishing (right, red) or Legitimate (left, green).</p>
+        <div class="contrib-chart" id="contrib-chart"></div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel__title">Threat intelligence check <span style="font-weight:400;color:var(--text-muted);font-size:0.8rem">(VirusTotal — separate from the model above)</span></h3>
+        <div id="threat-intel-box"></div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel__title">Extracted features</h3>
+        <div class="feature-table" id="feature-table"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= PERFORMANCE ============================= -->
+  <section id="performance" class="view">
+    <h2 class="section__title">Model performance</h2>
+    <p class="section__sub">All figures below come from one held-out test set — URLs the model never saw during training or model selection, split so that no domain appears in both sets.</p>
+
+    <div class="metric-grid" id="metric-grid">
+      <div class="metric-card"><span class="metric-card__value" id="m-accuracy">—</span><span class="metric-card__label">Accuracy</span></div>
+      <div class="metric-card"><span class="metric-card__value" id="m-precision">—</span><span class="metric-card__label">Precision</span></div>
+      <div class="metric-card"><span class="metric-card__value" id="m-recall">—</span><span class="metric-card__label">Recall</span></div>
+      <div class="metric-card"><span class="metric-card__value" id="m-f1">—</span><span class="metric-card__label">F1-score</span></div>
+      <div class="metric-card"><span class="metric-card__value" id="m-auc">—</span><span class="metric-card__label">ROC-AUC</span></div>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel__title">Why not just accuracy?</h3>
+      <p>In phishing detection the two mistakes are not equally costly. A <strong>false negative</strong> (missed phishing site) lets an attack through — this is what <strong>recall</strong> measures. A <strong>false positive</strong> (legitimate site flagged) erodes user trust — this is what <strong>precision</strong> measures. This project reports both alongside accuracy rather than accuracy alone.</p>
+    </div>
+
+    <div class="panel-row">
+      <div class="panel">
+        <h3 class="panel__title">Confusion matrix (test set)</h3>
+        <img src="/reports/confusion_matrix.png" alt="Confusion matrix" class="panel__img" id="confusion-img">
+      </div>
+      <div class="panel">
+        <h3 class="panel__title">Global feature importance</h3>
+        <img src="/reports/shap_summary.png" alt="SHAP global summary" class="panel__img" id="shap-img">
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel__title">Model comparison</h3>
+      <p class="panel__sub">Cross-validated F1-score used to select the final algorithm before it was retrained on the full training set.</p>
+      <div class="compare-table" id="compare-table"></div>
+    </div>
+  </section>
+
+  <!-- ============================= ABOUT ============================= -->
+  <section id="about" class="view">
+    <h2 class="section__title">About this project</h2>
+
+    <div class="panel">
+      <h3 class="panel__title">Objective</h3>
+      <p>URLGuard predicts whether a URL is likely to be <strong>phishing</strong> or <strong>legitimate</strong> using only features computed from the URL text, and explains every prediction with real SHAP values — no hard-coded logic or canned explanations.</p>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel__title">Dataset</h3>
+      <p>PhiUSIIL Phishing URL Dataset (Prasad &amp; Chandra, 2024, <em>Computers &amp; Security</em>) — 235,795 labelled URLs from the UCI Machine Learning Repository. Only the raw URL and label were used; page-content-derived columns were discarded to avoid data leakage. See the README for full details.</p>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel__title">Risk levels</h3>
+      <table class="risk-table">
+        <thead><tr><th>Phishing probability</th><th>Risk level</th></tr></thead>
+        <tbody>
+          <tr><td>Below 30%</td><td><span class="badge badge--low">Low Risk</span></td></tr>
+          <tr><td>30% – 70%</td><td><span class="badge badge--medium">Medium Risk</span></td></tr>
+          <tr><td>70% and above</td><td><span class="badge badge--high">High Risk</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel__title">Limitations</h3>
+      <ul class="plain-list">
+        <li>Lexical features only — no page content, WHOIS, or certificate checks, so a phishing page hosted on a clean-looking URL may be missed.</li>
+        <li>Subdomain counting uses a simple heuristic, not a full public-suffix list, so multi-part TLDs (e.g. co.uk) are slightly over-counted.</li>
+        <li>Trained on one dataset; real-world phishing patterns evolve and periodic retraining would be needed in production.</li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <h3 class="panel__title">Tech stack</h3>
+      <p>Python · Pandas · NumPy · Scikit-learn · SHAP · Joblib · Flask · vanilla HTML/CSS/JS</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>Academic project — Explainable ML Framework for Phishing URL Detection. Not a substitute for professional security tools.</p>
+</footer>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "accuracy": 0.9651388979957598,
+  "precision": 0.9934980494148244,
+  "recall": 0.9285367039377734,
+  "f1_score": 0.9599195878879256,
+  "roc_auc": 0.9889080371158085,
+  "confusion_matrix": [
+    [
+      25058,
+      125
+    ],
+    [
+      1470,
+      19100
+    ]
+  ],
+  "model_name": "Gradient Boosting",
+  "train_size": 189609,
+  "test_size": 45753,
+  "feature_count": 30
+}
