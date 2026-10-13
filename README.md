@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # URLGuard — An Explainable Machine Learning Framework for Phishing URL Detection and Risk Assessment
 
 A college final-year project that predicts whether a URL is **Phishing** or
@@ -576,3 +577,6 @@ Prasad, A., & Chandra, S. (2024). PhiUSIIL: A diverse security profile
 empowered phishing URL detection framework based on similarity index and
 incremental learning. *Computers & Security*, 136, 103545.
 https://doi.org/10.1016/j.cose.2023.103545
+=======
+# Phishing_URL-Detection
+>>>>>>> 568bf948725ea2c3db8b02549b6353ac69f437ec
